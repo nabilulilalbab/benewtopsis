@@ -87,7 +87,7 @@ func main() {
 	}
 
 	// Start server
-	log.Println("Server starting on 0.0.0.0:8080")
+	log.Printf("Starting server on port %s", port)
 	log.Println("Swagger UI available at: http://localhost:8080/swagger/index.html")
 	router.Run(":" + port)
 }
