@@ -1,0 +1,40 @@
+{
+  "criteria": [
+    {"name": "Microteaching", "weight": 0.35, "type": "benefit"},
+    {"name": "Pemahaman Agama", "weight": 0.2, "type": "benefit"},
+    {"name": "Baca Alqura’an", "weight": 0.2, "type": "benefit"},
+    {"name": "Wawancara", "weight": 0.25, "type": "benefit"}
+  ],
+  "alternatives": [
+    {"name": "Ade Syahputra", "values": {"Microteaching": 2, "Pemahaman Agama": 3, "Baca Alqura’an": 3, "Wawancara": 3}},
+    {"name": "Afdon Andika", "values": {"Microteaching": 3, "Pemahaman Agama": 3, "Baca Alqura’an": 3, "Wawancara": 3}},
+    {"name": "Ahmat Fauzi", "values": {"Microteaching": 3, "Pemahaman Agama": 2, "Baca Alqura’an": 2, "Wawancara": 2}},
+    {"name": "Rizkyansyah", "values": {"Microteaching": 3, "Pemahaman Agama": 2, "Baca Alqura’an": 1, "Wawancara": 2}},
+    {"name": "Ayu Winingsih", "values": {"Microteaching": 3, "Pemahaman Agama": 3, "Baca Alqura’an": 4, "Wawancara": 3}},
+    {"name": "Biyan Arista", "values": {"Microteaching": 3, "Pemahaman Agama": 3, "Baca Alqura’an": 3, "Wawancara": 3}},
+    {"name": "Dwi Eka", "values": {"Microteaching": 3, "Pemahaman Agama": 3, "Baca Alqura’an": 3, "Wawancara": 2}},
+    {"name": "Elma", "values": {"Microteaching": 2, "Pemahaman Agama": 2, "Baca Alqura’an": 3, "Wawancara": 3}},
+    {"name": "Saputri", "values": {"Microteaching": 3, "Pemahaman Agama": 3, "Baca Alqura’an": 2, "Wawancara": 2}},
+    {"name": "Jhon", "values": {"Microteaching": 3, "Pemahaman Agama": 3, "Baca Alqura’an": 3, "Wawancara": 4}},
+    {"name": "Hermina", "values": {"Microteaching": 3, "Pemahaman Agama": 3, "Baca Alqura’an": 3, "Wawancara": 4}},
+    {"name": "Fitri", "values": {"Microteaching": 3, "Pemahaman Agama": 2, "Baca Alqura’an": 2, "Wawancara": 3}},
+    {"name": "Ismed", "values": {"Microteaching": 3, "Pemahaman Agama": 3, "Baca Alqura’an": 4, "Wawancara": 3}},
+    {"name": "Naja", "values": {"Microteaching": 2, "Pemahaman Agama": 3, "Baca Alqura’an": 3, "Wawancara": 2}},
+    {"name": "Auliah", "values": {"Microteaching": 3, "Pemahaman Agama": 3, "Baca Alqura’an": 1, "Wawancara": 2}},
+    {"name": "Sony", "values": {"Microteaching": 4, "Pemahaman Agama": 3, "Baca Alqura’an": 3, "Wawancara": 3}},
+    {"name": "Budi", "values": {"Microteaching": 3, "Pemahaman Agama": 3, "Baca Alqura’an": 3, "Wawancara": 3}},
+    {"name": "Eka", "values": {"Microteaching": 2, "Pemahaman Agama": 2, "Baca Alqura’an": 3, "Wawancara": 3}},
+    {"name": "Sanny", "values": {"Microteaching": 2, "Pemahaman Agama": 2, "Baca Alqura’an": 2, "Wawancara": 3}},
+    {"name": "Anton", "values": {"Microteaching": 3, "Pemahaman Agama": 2, "Baca Alqura’an": 3, "Wawancara": 3}},
+    {"name": "Rafael", "values": {"Microteaching": 3, "Pemahaman Agama": 3, "Baca Alqura’an": 3, "Wawancara": 3}},
+    {"name": "Rahmad", "values": {"Microteaching": 3, "Pemahaman Agama": 3, "Baca Alqura’an": 2, "Wawancara": 3}},
+    {"name": "Harry", "values": {"Microteaching": 3, "Pemahaman Agama": 3, "Baca Alqura’an": 2, "Wawancara": 3}},
+    {"name": "Antonius", "values": {"Microteaching": 3, "Pemahaman Agama": 3, "Baca Alqura’an": 3, "Wawancara": 3}},
+    {"name": "Sella", "values": {"Microteaching": 4, "Pemahaman Agama": 3, "Baca Alqura’an": 3, "Wawancara": 3}},
+    {"name": "Prian", "values": {"Microteaching": 2, "Pemahaman Agama": 3, "Baca Alqura’an": 3, "Wawancara": 3}},
+    {"name": "Hairani", "values": {"Microteaching": 2, "Pemahaman Agama": 3, "Baca Alqura’an": 3, "Wawancara": 3}},
+    {"name": "Fenny", "values": {"Microteaching": 3, "Pemahaman Agama": 2, "Baca Alqura’an": 3, "Wawancara": 3}},
+    {"name": "Gunawan", "values": {"Microteaching": 3, "Pemahaman Agama": 2, "Baca Alqura’an": 3, "Wawancara": 3}},
+    {"name": "Sinta", "values": {"Microteaching": 3, "Pemahaman Agama": 3, "Baca Alqura’an": 3, "Wawancara": 3}}
+  ]
+}

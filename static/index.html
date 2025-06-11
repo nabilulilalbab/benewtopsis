@@ -1,0 +1,312 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>TOPSIS Calculator</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css"
+      rel="stylesheet"
+    />
+  </head>
+  <body class="bg-gray-100 p-6">
+    <div class="max-w-6xl mx-auto">
+      <h1 class="text-3xl font-bold text-center mb-6">TOPSIS Calculator</h1>
+
+      <!-- Criteria Section -->
+      <div id="criteria-container" class="mb-6 bg-white p-4 rounded shadow">
+        <h2 class="text-xl font-bold mb-2">Criteria</h2>
+        <div id="criteria-list"></div>
+        <button
+          id="add-criterion"
+          class="mt-2 p-2 bg-green-500 text-white rounded hover:bg-green-600"
+        >
+          Add Criterion
+        </button>
+      </div>
+
+      <!-- Alternatives Section -->
+      <div id="alternatives-container" class="mb-6 bg-white p-4 rounded shadow">
+        <h2 class="text-xl font-bold mb-2">Alternatives</h2>
+        <div id="alternatives-list"></div>
+        <button
+          id="add-alternative"
+          class="mt-2 p-2 bg-green-500 text-white rounded hover:bg-green-600"
+        >
+          Add Alternative
+        </button>
+      </div>
+
+      <!-- Calculate Button -->
+      <button
+        id="calculate"
+        class="w-full p-2 bg-blue-500 text-white rounded hover:bg-blue-600 mb-6"
+      >
+        Calculate TOPSIS
+      </button>
+
+      <!-- Results Section -->
+      <div id="results" class="bg-white p-4 rounded shadow hidden">
+        <h2 class="text-xl font-bold mb-2">Results</h2>
+        <div class="overflow-x-auto">
+          <table class="table-auto w-full border-collapse">
+            <thead>
+              <tr class="bg-gray-200">
+                <th class="px-4 py-2 border">Rank</th>
+                <th class="px-4 py-2 border">Name</th>
+                <!-- Dynamic headers for normalized and weighted values will be added here -->
+                <th class="px-4 py-2 border">Positive Distance</th>
+                <th class="px-4 py-2 border">Negative Distance</th>
+                <th class="px-4 py-2 border">Closeness Value</th>
+              </tr>
+            </thead>
+            <tbody id="results-body"></tbody>
+          </table>
+        </div>
+        <input
+          type="text"
+          id="selection-name"
+          placeholder="Selection Name"
+          class="mt-4 p-2 border w-full rounded"
+        />
+        <button
+          id="save"
+          class="mt-2 p-2 bg-blue-500 text-white rounded hover:bg-blue-600 w-full"
+        >
+          Save Results
+        </button>
+      </div>
+    </div>
+
+    <script>
+      let criterionId = 0;
+      let storedData = null;
+      let criteriaNames = [];
+
+      // Add Criterion
+      document.getElementById("add-criterion").addEventListener("click", () => {
+        criterionId++;
+        const criterionDiv = document.createElement("div");
+        criterionDiv.className = "criterion flex space-x-2 mb-2";
+        criterionDiv.dataset.id = criterionId;
+
+        criterionDiv.innerHTML = `
+                <input type="text" placeholder="Criterion Name" class="p-2 border rounded flex-1">
+                <input type="number" placeholder="Weight" step="0.01" class="p-2 border rounded w-24">
+                <select class="p-2 border rounded w-32">
+                    <option value="benefit">Benefit</option>
+                    <option value="cost">Cost</option>
+                </select>
+                <button class="p-2 bg-red-500 text-white rounded hover:bg-red-600">Remove</button>
+            `;
+
+        criterionDiv
+          .querySelector("button")
+          .addEventListener("click", () => removeCriterion(criterionDiv));
+        document.getElementById("criteria-list").appendChild(criterionDiv);
+
+        // Update alternatives with new criterion input
+        document.querySelectorAll(".alternative").forEach((alt) => {
+          const valueInput = document.createElement("input");
+          valueInput.type = "number";
+          valueInput.placeholder = "Value";
+          valueInput.className = "p-2 border rounded w-20";
+          valueInput.dataset.criterionId = criterionId;
+          alt.insertBefore(valueInput, alt.querySelector("button"));
+        });
+      });
+
+      // Remove Criterion
+      function removeCriterion(criterionDiv) {
+        const id = criterionDiv.dataset.id;
+        criterionDiv.remove();
+        document
+          .querySelectorAll(`input[data-criterion-id="${id}"]`)
+          .forEach((input) => input.remove());
+      }
+
+      // Add Alternative
+      document
+        .getElementById("add-alternative")
+        .addEventListener("click", () => {
+          const alternativeDiv = document.createElement("div");
+          alternativeDiv.className = "alternative flex space-x-2 mb-2";
+
+          const nameInput = document.createElement("input");
+          nameInput.type = "text";
+          nameInput.placeholder = "Alternative Name";
+          nameInput.className = "p-2 border rounded flex-1";
+          alternativeDiv.appendChild(nameInput);
+
+          document.querySelectorAll(".criterion").forEach((criterion) => {
+            const id = criterion.dataset.id;
+            const valueInput = document.createElement("input");
+            valueInput.type = "number";
+            valueInput.placeholder = "Value";
+            valueInput.className = "p-2 border rounded w-20";
+            valueInput.dataset.criterionId = id;
+            alternativeDiv.appendChild(valueInput);
+          });
+
+          const removeButton = document.createElement("button");
+          removeButton.textContent = "Remove";
+          removeButton.className =
+            "p-2 bg-red-500 text-white rounded hover:bg-red-600";
+          removeButton.addEventListener("click", () => alternativeDiv.remove());
+          alternativeDiv.appendChild(removeButton);
+
+          document
+            .getElementById("alternatives-list")
+            .appendChild(alternativeDiv);
+        });
+
+      // Calculate TOPSIS
+      document.getElementById("calculate").addEventListener("click", () => {
+        const criteria = [];
+        const criterionDivs = document.querySelectorAll(".criterion");
+        criteriaNames = [];
+        criterionDivs.forEach((div) => {
+          const name = div.querySelector('input[type="text"]').value.trim();
+          const weight = parseFloat(
+            div.querySelector('input[type="number"]').value,
+          );
+          const type = div.querySelector("select").value;
+          if (name && !isNaN(weight)) {
+            criteria.push({ name, weight, type });
+            criteriaNames.push(name);
+          }
+        });
+
+        const alternatives = [];
+        const alternativeDivs = document.querySelectorAll(".alternative");
+        alternativeDivs.forEach((div) => {
+          const name = div.querySelector('input[type="text"]').value.trim();
+          const values = {};
+          div.querySelectorAll('input[type="number"]').forEach((input) => {
+            const criterionId = input.dataset.criterionId;
+            const criterionDiv = document.querySelector(
+              `.criterion[data-id="${criterionId}"]`,
+            );
+            if (criterionDiv) {
+              const criterionName = criterionDiv
+                .querySelector('input[type="text"]')
+                .value.trim();
+              values[criterionName] = parseFloat(input.value) || 0;
+            }
+          });
+          if (name && Object.keys(values).length === criteria.length) {
+            alternatives.push({ name, values });
+          }
+        });
+
+        if (criteria.length === 0 || alternatives.length === 0) {
+          alert("Please add at least one criterion and one alternative.");
+          return;
+        }
+
+        const data = { criteria, alternatives };
+        fetch("http://localhost:8000/api/topsis", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(data),
+        })
+          .then((response) => response.json())
+          .then((result) => {
+            storedData = result.data;
+            displayResults(result.data.results, criteriaNames);
+            document.getElementById("results").classList.remove("hidden");
+          })
+          .catch((error) => {
+            console.error("Error:", error);
+            alert("An error occurred while calculating TOPSIS.");
+          });
+      });
+
+      // Display Results
+      function displayResults(results, criteriaNames) {
+        const thead = document.querySelector("#results table thead tr");
+        thead.innerHTML = `
+                <th class="px-4 py-2 border">Rank</th>
+                <th class="px-4 py-2 border">Name</th>
+            `;
+
+        // Add headers for normalized values
+        criteriaNames.forEach((name) => {
+          thead.innerHTML += `<th class="px-4 py-2 border">Norm. ${name}</th>`;
+        });
+
+        // Add headers for weighted values
+        criteriaNames.forEach((name) => {
+          thead.innerHTML += `<th class="px-4 py-2 border">Weight. ${name}</th>`;
+        });
+
+        thead.innerHTML += `
+                <th class="px-4 py-2 border">Positive Distance</th>
+                <th class="px-4 py-2 border">Negative Distance</th>
+                <th class="px-4 py-2 border">Closeness Value</th>
+            `;
+
+        const tbody = document.getElementById("results-body");
+        tbody.innerHTML = "";
+        results.forEach((result) => {
+          const row = document.createElement("tr");
+          row.className = "hover:bg-gray-100";
+          row.innerHTML = `
+                    <td class="px-4 py-2 border text-center">${result.rank}</td>
+                    <td class="px-4 py-2 border">${result.name}</td>
+                `;
+
+          // Add normalized values
+          criteriaNames.forEach((name) => {
+            const value = result.normalizedvalues[name] || 0;
+            row.innerHTML += `<td class="px-4 py-2 border text-center">${value.toFixed(4)}</td>`;
+          });
+
+          // Add weighted values
+          criteriaNames.forEach((name) => {
+            const value = result.WeightedValues[name] || 0;
+            row.innerHTML += `<td class="px-4 py-2 border text-center">${value.toFixed(4)}</td>`;
+          });
+
+          row.innerHTML += `
+                    <td class="px-4 py-2 border text-center">${result.positivedistance.toFixed(4)}</td>
+                    <td class="px-4 py-2 border text-center">${result.negativedistance.toFixed(4)}</td>
+                    <td class="px-4 py-2 border text-center">${result.closenessvalue.toFixed(4)}</td>
+                `;
+
+          tbody.appendChild(row);
+        });
+      }
+
+      // Save Results
+      document.getElementById("save").addEventListener("click", () => {
+        const selectionName = document
+          .getElementById("selection-name")
+          .value.trim();
+        if (!selectionName) {
+          alert("Please enter a selection name.");
+          return;
+        }
+        if (!storedData) {
+          alert("Please calculate TOPSIS first.");
+          return;
+        }
+
+        const saveData = { name: selectionName, data: storedData };
+        fetch("http://localhost:8000/api/topsis/save", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(saveData),
+        })
+          .then((response) => response.json())
+          .then((result) => {
+            alert(`Saved successfully with ID: ${result.calculation_id}`);
+          })
+          .catch((error) => {
+            console.error("Error:", error);
+            alert("An error occurred while saving the results.");
+          });
+      });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,370 @@
+basePath: /api
+definitions:
+  helper.Response:
+    properties:
+      data: {}
+      message:
+        example: Success
+        type: string
+    type: object
+  helperTopsis.Alternative:
+    properties:
+      name:
+        type: string
+      values:
+        additionalProperties:
+          type: number
+        type: object
+    type: object
+  helperTopsis.Criterion:
+    properties:
+      name:
+        type: string
+      type:
+        type: string
+      weight:
+        type: number
+    type: object
+  helperTopsis.TOPSISRequest:
+    properties:
+      alternatives:
+        items:
+          $ref: '#/definitions/helperTopsis.Alternative'
+        type: array
+      criteria:
+        items:
+          $ref: '#/definitions/helperTopsis.Criterion'
+        type: array
+    type: object
+  topsiscontroller.SaveTopsisRequest:
+    type: object
+  topsiscontroller.UpdateTopsisRequest:
+    properties:
+      alternatives:
+        items:
+          properties:
+            name:
+              example: Alternative 1
+              type: string
+            values:
+              items:
+                properties:
+                  criteria_name:
+                    example: cost
+                    type: string
+                  value:
+                    example: 100
+                    type: number
+                type: object
+              type: array
+          type: object
+        type: array
+    type: object
+  usercontroller.LoginRequest:
+    properties:
+      confirm_password:
+        example: password123
+        type: string
+      email:
+        example: john@example.com
+        type: string
+      password:
+        example: password123
+        type: string
+    type: object
+  usercontroller.SignupRequest:
+    properties:
+      confirm_password:
+        example: password123
+        type: string
+      email:
+        example: john@example.com
+        type: string
+      nama_lengkap:
+        example: John Doe
+        type: string
+      password:
+        example: password123
+        type: string
+    type: object
+host: localhost:8080
+info:
+  contact:
+    email: support@swagger.io
+    name: API Support
+    url: http://www.swagger.io/support
+  description: This is a TOPSIS (Technique for Order Preference by Similarity to Ideal
+    Solution) API server.
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  termsOfService: http://swagger.io/terms/
+  title: TOPSIS API
+  version: "1.0"
+paths:
+  /login:
+    post:
+      consumes:
+      - application/json
+      description: Authenticate user and return JWT token
+      parameters:
+      - description: User login credentials
+        in: body
+        name: credentials
+        required: true
+        schema:
+          $ref: '#/definitions/usercontroller.LoginRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/helper.Response'
+      summary: User login
+      tags:
+      - Authentication
+  /logout:
+    post:
+      consumes:
+      - application/json
+      description: Logout user by clearing the authentication cookie
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/helper.Response'
+      security:
+      - BearerAuth: []
+      summary: User logout
+      tags:
+      - Authentication
+  /signup:
+    post:
+      consumes:
+      - application/json
+      description: Register a new user account
+      parameters:
+      - description: User registration data
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/usercontroller.SignupRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/helper.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/helper.Response'
+      summary: User registration
+      tags:
+      - Authentication
+  /topsis:
+    post:
+      consumes:
+      - application/json
+      description: Perform TOPSIS (Technique for Order Preference by Similarity to
+        Ideal Solution) calculation
+      parameters:
+      - description: TOPSIS calculation request
+        in: body
+        name: topsis
+        required: true
+        schema:
+          $ref: '#/definitions/helperTopsis.TOPSISRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/helper.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/helper.Response'
+      security:
+      - BearerAuth: []
+      summary: Execute TOPSIS calculation
+      tags:
+      - TOPSIS
+  /topsis/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve a specific TOPSIS calculation by its ID (only if owned
+        by current user)
+      parameters:
+      - description: Calculation ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/helper.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/helper.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/helper.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/helper.Response'
+      security:
+      - BearerAuth: []
+      summary: Get TOPSIS calculation by ID
+      tags:
+      - TOPSIS
+    put:
+      consumes:
+      - application/json
+      description: Update an existing TOPSIS calculation with new alternatives
+      parameters:
+      - description: Calculation ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Updated TOPSIS data
+        in: body
+        name: topsis
+        required: true
+        schema:
+          $ref: '#/definitions/topsiscontroller.UpdateTopsisRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Update TOPSIS calculation result
+      tags:
+      - TOPSIS
+  /topsis/history:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve all TOPSIS calculations with their results for current
+        user
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Get all TOPSIS calculation history
+      tags:
+      - TOPSIS
+  /topsis/save:
+    post:
+      consumes:
+      - application/json
+      description: Save the result of TOPSIS calculation to database
+      parameters:
+      - description: TOPSIS result to save
+        in: body
+        name: topsis
+        required: true
+        schema:
+          $ref: '#/definitions/topsiscontroller.SaveTopsisRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Save TOPSIS calculation result
+      tags:
+      - TOPSIS
+  /validate:
+    get:
+      consumes:
+      - application/json
+      description: Check if the current JWT token is valid
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/helper.Response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/helper.Response'
+      security:
+      - BearerAuth: []
+      summary: Validate JWT token
+      tags:
+      - Authentication
+securityDefinitions:
+  BearerAuth:
+    description: Type "Bearer" followed by a space and JWT token.
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"
